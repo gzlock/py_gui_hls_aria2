@@ -57,7 +57,7 @@ class Frame(baseFrame):
         # aria2的状态显示
         frame = ttk.Frame(self.layout)
         frame.pack(fill=tkinter.BOTH, pady=5)
-        ttk.Label(frame, text='Aria2状态：', width=Frame.LABEL_WIDTH, anchor=tkinter.E).pack(side=tkinter.LEFT)
+        ttk.Label(frame, text='Aria2状态', width=Frame.LABEL_WIDTH, anchor=tkinter.E).pack(side=tkinter.LEFT)
         self.__state_canvas = Canvas(frame, width=14, height=14, bd=0, highlightthickness=0, relief=tkinter.FLAT,
                                      borderwidth=0)
         self.__state_canvas.pack(side=tkinter.LEFT)
