@@ -1,0 +1,6 @@
+build/
+win_build/
+dist/
+win_dist/
+.idea/
+*.iml
