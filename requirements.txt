@@ -1,0 +1,6 @@
+m3u8==0.6.0
+aria2p==0.9.1
+requests~=2.23.0
+
+appdirs~=1.4.4
+diskcache~=4.1.0
