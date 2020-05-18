@@ -24,11 +24,6 @@ class Frame:
         self.__log_view.tag_config('log', foreground='black')
         self.__log_view.tag_config('error', foreground='red')
 
-        def scroll(*args):
-            print(*args)
-
-        self.__log_view.vbar['command'] = scroll
-
         # 功能按钮
         frame = ttk.Frame(layout, height=10)
         frame.pack(fill=tkinter.BOTH, pady=5)
