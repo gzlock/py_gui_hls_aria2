@@ -5,9 +5,9 @@ import requests
 
 
 class CoreM3u8:
-    def __init__(self, url: str, m3u8_proxy: str):
+    def __init__(self, url: str, proxy: str):
         self.__url = url
-        self.__proxy = m3u8_proxy
+        self.__proxy = proxy
 
     def load_m3u8_content(self, timeout: int = 5) -> set:
         print('load_m3u8_content', self.__url)
