@@ -19,7 +19,7 @@ class CoreAria2:
         self.__aria2: aria2p.API = None
         self.__options: aria2p.Options = None
 
-    def start(self, dir: str):
+    def start(self, dir: str, proxy: str):
         self.__log.log('正在启动Aria2c，端口:{} 密钥:{}'.format(self.__port, self.__secret))
         parameters = ' --enable-rpc --rpc-listen-port={} --rpc-secret={} --rpc-allow-origin-all=true --rpc-listen-all=true' \
             .format(self.__port, self.__secret)
@@ -27,11 +27,13 @@ class CoreAria2:
             command = resource_path.path('binary/win/aria2c.exe') + parameters
             si = subprocess.STARTUPINFO()
             si.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-            self.__process = subprocess.Popen(command, shell=True,
+            self.__process = subprocess.Popen(command,
+                                              # shell=True,
                                               stdin=subprocess.PIPE,
                                               stdout=subprocess.PIPE,
                                               stderr=subprocess.PIPE,
-                                              startupinfo=si)
+                                              # startupinfo=si,
+                                              )
         else:
             command = resource_path.path('binary/darwin/aria2c') + parameters
             self.__process = subprocess.Popen(command, shell=True,
@@ -52,10 +54,11 @@ class CoreAria2:
 
     def __connect(self, dir: str, max_concurrent: int = 5, all_proxy: str = ''):
         self.__aria2 = aria2p.API(
-            aria2p.Client(host='http://127.0.0.1',
-                          port=self.__port,
-                          secret=self.__secret,
-                          timeout=5, )
+            aria2p.Client(
+                port=self.__port,
+                secret=self.__secret,
+                timeout=5,
+            )
         )
         self.__options = aria2p.Options(api=self.__aria2,
                                         struct={

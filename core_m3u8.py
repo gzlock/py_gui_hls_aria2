@@ -25,11 +25,11 @@ class CoreM3u8:
         self.__log = log
         self.__is_running: bool = False
         self.__callback = callback
+        self.urls: List[str] = []
 
     def start(self):
         self.__is_running = True
-        thread = threading.Thread(target=self.__loop)
-        thread.start()
+        threading.Thread(target=self.__loop).start()
 
     def stop(self):
         self.__is_running = False
@@ -43,6 +43,7 @@ class CoreM3u8:
                 downloaded_url |= new
                 # print('新url', unique)
                 if len(unique) > 0:
+                    print('core_m3u8 线程id', threading.get_ident())
                     self.__callback(list(unique))
             except Exception as e:
                 self.__log.error('m3u8错误\n{}'.format(e))
