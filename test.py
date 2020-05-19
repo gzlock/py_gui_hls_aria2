@@ -1,13 +1,57 @@
-import m3u8
+import multiprocessing
+import os
+import subprocess
+import threading
+import time
+from sys import platform
+
+import aria2p
+
+import utils
+
+
+def startup_aria2() -> subprocess.Popen:
+    parameter = ' --enable-rpc --rpc-listen-port=2333 --rpc-secret=123456 --rpc-allow-origin-all=true --rpc-listen-all=true'
+    if platform == 'win32':
+        si = subprocess.STARTUPINFO()
+        si.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+        command = 'binary/win/aria2c.exe'
+        command = os.path.join('.', 'binary', 'win', 'aria2c.exe')
+        command = command + parameter
+        print('启动命令', command)
+        return subprocess.Popen(command, env=utils.popen_env(), shell=True, startupinfo=si)
+    else:
+        return subprocess.Popen('./binary/darwin/aria2c' + parameter,
+                                env=utils.popen_env(),
+                                shell=True)
+
+
+def connect_aria2():
+    for i in range(10):
+        time.sleep(2)
+        aria2 = aria2p.Client(port=2333, secret='123456', timeout=2)
+        print('aria2 version', aria2.get_version()['version'])
+
+
+def new_thread():
+    print('thread pid', os.getpid())
+    a = 0
+    while True:
+        a += 1
+        print(a)
+        time.sleep(1)
+
 
 if __name__ == '__main__':
-    '''vidol m3u8入口链接'''
-    # a = m3u8.load(
-    #    'https://manifest.prod.boltdns.net/manifest/v1/hls/v4/aes128/4338955585001/88e1ccb7-26af-4d5c-b640-d5054d4f717b/10s/master.m3u8?fastly_token=NWVjMzRmNjRfOWIzNGU2MzgxMzc0MTQ2Mjg3YmVkYjdkZmYxMDRkNmEyMjA2YmU4ZGJiYTY2NTk4ZGMyYmZmZjlhYjUyNmE0NA%3D%3D')
-    '''4gtv m3u8入口链接'''
-    a = m3u8.load(
-        'https://4gtvfreepc-cds.cdn.hinet.net/live/pool/4gtv-4gtv040/4gtv-live-mid/index.m3u8?token=YtEJGbrARJoqpK6Ue6LZ6Q&expires=1589882071&token1=bwb6ix1jMCbKDMn8FIlaQA&expires1=1589882071&_=1589835268678')
-    print('a is_variant', a.is_variant)
-    print('playlists', max([p.stream_info.bandwidth for p in a.playlists]))
-    pl: m3u8.Playlist = max(a.playlists, key=lambda item: item.stream_info.bandwidth)
-    print('最高清：', pl.absolute_uri)
+    print('main pid', os.getpid())
+    t = multiprocessing.Process(target=new_thread)
+    t.start()
+    time.sleep(5)
+    t.kill()
+
+if __name__ == '__main__1':
+    p = startup_aria2()
+    print('pid', p.pid)
+    thread = threading.Thread(target=connect_aria2)
+    thread.start()
+    thread.join()

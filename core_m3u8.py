@@ -10,7 +10,7 @@ class CoreM3u8:
         self.__proxy = proxy
 
     def load_m3u8_content(self, timeout: int = 5) -> set:
-        print('load_m3u8_content', self.__url)
+        # print('load_m3u8_content', self.__url)
         res = requests.get(url=self.__url, proxies={'http': self.__proxy, 'https': self.__proxy},
                            timeout=timeout)
         if res.status_code != 200:
