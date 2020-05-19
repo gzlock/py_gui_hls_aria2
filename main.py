@@ -14,10 +14,6 @@ from core import Core
 from ui_menu import Menu
 
 
-def start_aria2c():
-    pass
-
-
 class Window:
     def __init__(self):
         self.__is_start = False
@@ -75,13 +71,14 @@ class Window:
         self.__ui_buttons.disable()
 
         try:
-            self.__core.start()
+            self.__core.test_m3u8()
         except Exception as e:
             self.__ui_m3u8.disable(False)
             self.__ui_aria2.disable(False)
             self.__ui_buttons.disable(False)
             messagebox.showerror(title='M3u8源读取错误', message=e)
             return
+        self.__core.start()
 
         self.__ui_aria2.turn_on()
 

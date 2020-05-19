@@ -4,3 +4,4 @@ requests~=2.23.0
 
 appdirs~=1.4.4
 diskcache~=4.1.0
+psutil==5.7.0

@@ -3,24 +3,26 @@ import subprocess
 from sys import platform
 
 import aria2p
+import psutil
 
 import resource_path
 from ui_log import Frame
 
 
 class CoreAria2:
-    def __init__(self, log: Frame, port: int = 2333, secret: str = '123456', ):
-        self.__log = log
+    def __init__(self, port: int = 2333, secret: str = '123456', ):
         self.__port = port
         self.__secret = secret
         self.__aria2: aria2p.API = None
         self.__options: aria2p.Options = None
         self.__subprocess: subprocess.Popen = None
+        self.__log: Frame = None
         print('CoreAria2.__init__', os.getpid())
 
-    def start(self):
+    def start(self, log: Frame):
+        self.__log = log
         self.__log.log('正在启动Aria2c，端口:{} 密钥:{}'.format(self.__port, self.__secret))
-        parameters = ' --daemon  --enable-rpc --rpc-listen-port={} --rpc-secret={}' \
+        parameters = ' -s4 -x16 --enable-rpc --rpc-listen-port={} --rpc-secret={}' \
                      ' --rpc-allow-origin-all=true --rpc-listen-all=true' \
             .format(self.__port, self.__secret)
         if platform == 'win32':
@@ -36,7 +38,7 @@ class CoreAria2:
             command = os.path.join('binary', 'darwin', 'aria2c')
             command = resource_path.path(command) + parameters
 
-        self.__subprocess = subprocess.Popen(command, env=None, shell=True,
+        self.__subprocess = subprocess.Popen(command, shell=True,
                                              stdin=subprocess.PIPE,
                                              stdout=subprocess.PIPE,
                                              stderr=subprocess.PIPE, )
@@ -64,8 +66,12 @@ class CoreAria2:
         self.__log.log('正在停止Aria2c')
         self.__disconnect()
         if self.__subprocess is not None:
-            self.__subprocess.terminate()
-            self.__subprocess.kill()
+            process = psutil.Process(self.__subprocess.pid)
+            for proc in process.children(recursive=True):
+                print('child process', proc.name(), proc.pid)
+                proc.kill()
+            print('aria2 pid', process.name(), process.pid)
+            process.kill()
             self.__subprocess = None
         self.__log.log('成功停止Aria2c')
 
@@ -75,6 +81,9 @@ class CoreAria2:
         self.__aria2.stop_listening()
         self.__aria2 = None
         self.__options = None
+
+    def has_downloading(self) -> bool:
+        return len(self.__aria2.get_downloads()) > 0
 
     def add_uris(self, uri):
         if self.__aria2 is None:

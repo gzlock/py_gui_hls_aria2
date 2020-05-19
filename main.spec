@@ -16,7 +16,7 @@ else:
 block_cipher = None
 
 
-a = Analysis(['main.py'],
+a = Analysis(['test.py'],
              pathex=[path],
              binaries=binaries,
              datas=[
@@ -35,23 +35,18 @@ pyz = PYZ(a.pure, a.zipped_data,
              cipher=block_cipher)
 exe = EXE(pyz,
           a.scripts,
+          a.binaries,
+          a.zipfiles,
+          a.datas,
           [],
-          exclude_binaries=True,
           name='main',
-          debug=True,
+          debug=False,
           bootloader_ignore_signals=False,
           strip=False,
           upx=True,
-          console=True )
-coll = COLLECT(exe,
-               a.binaries,
-               a.zipfiles,
-               a.datas,
-               strip=False,
-               upx=True,
-               upx_exclude=[],
-               name='main')
-app = BUNDLE(coll,
+          runtime_tmpdir=None,
+          console=False , icon=icon)
+app = BUNDLE(exe,
              name='main.app',
-             icon='icon.icns',
-             bundle_identifier='com.gzlock.hls_recorder')
+             icon=icon,
+             bundle_identifier=None)
