@@ -39,12 +39,11 @@ class CoreM3u8:
         while self.__is_running:
             try:
                 new = self.load_m3u8_content()
-                unique = new - downloaded_url
+                unique = list(new - downloaded_url)
                 downloaded_url |= new
                 # print('新url', unique)
                 if len(unique) > 0:
-                    print('core_m3u8 线程id', threading.get_ident())
-                    self.__callback(list(unique))
+                    self.__callback(unique)
             except Exception as e:
                 self.__log.error('m3u8错误\n{}'.format(e))
             finally:
