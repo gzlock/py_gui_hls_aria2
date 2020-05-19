@@ -35,12 +35,12 @@ class Frame:
         self.layout.pack(fill=tkinter.BOTH, pady=5)
 
     def log(self, msg: str):
-        print('log', msg)
+        # print('log', msg)
         self.__logs.append((msg, 0))
         self.__display_log()
 
     def error(self, msg: str):
-        print('error', msg)
+        # print('error', msg)
         self.__logs.append((msg, 1))
         self.__display_log()
 
