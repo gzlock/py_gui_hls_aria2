@@ -123,11 +123,11 @@ class Window:
         self.__ui_m3u8.disable(False)
         self.__ui_buttons.disable(False)
 
-        if messagebox.askyesno(title='Aria2c仍然在运行', message='是否停止Aria2c？'):
+        if messagebox.askyesno(message='是否停止Aria2c？'):
             self.stop_aria2c()
 
     def merge_video(self):
-        merge_ts_to_mp4(self.__ui_aria2.dir.get())
+        merge_ts_to_mp4(self.__ui_aria2.dir.get(), test=False)
 
 
 if __name__ == '__main__':
