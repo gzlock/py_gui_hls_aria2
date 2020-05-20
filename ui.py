@@ -1,6 +1,8 @@
 import tkinter
 from tkinter import ttk
 
+from my_entry import MyEntry
+
 frameList = [tkinter.Frame, tkinter.LabelFrame, ttk.Frame, ttk.LabelFrame, tkinter.Toplevel]
 
 

@@ -1,9 +1,13 @@
 import tkinter
 from tkinter import ttk
+from typing import Callable
 
 
 class Frame:
-    def __init__(self, root, on_click_start, on_click_stop, on_click_merge_video):
+    def __init__(self, root, on_click_start,
+                 on_click_stop: Callable,
+                 on_click_merge_video: Callable,
+                 ):
         self.root = root
         self.layout = layout = ttk.LabelFrame(root, text='控制区')
         layout.config(padding=5)
@@ -18,7 +22,8 @@ class Frame:
         stop_btn.pack(side=tkinter.LEFT, padx=5, pady=5)
 
         # 合并视频按钮
-        ttk.Button(layout, text='合并视频', command=on_click_merge_video).pack(side=tkinter.LEFT, padx=5, pady=5)
+        ttk.Button(layout, text='合并视频', command=on_click_merge_video) \
+            .pack(side=tkinter.LEFT, padx=5, pady=5)
 
     def disable(self, disabled: bool = True):
         if disabled:

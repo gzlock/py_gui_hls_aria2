@@ -3,18 +3,24 @@ import subprocess
 import tkinter
 from sys import platform
 from tkinter import ttk, messagebox, filedialog, Canvas
+from typing import Callable
 
 import my_cache
+from my_entry import MyEntry
 from ui import Frame as baseFrame
 
 
 class Frame(baseFrame):
     LABEL_WIDTH = 10
 
-    def __init__(self, root, cache: my_cache):
+    def __init__(self, root,
+                 cache: my_cache,
+                 on_click_start_aria2c: Callable,
+                 on_click_stop_aria2c: Callable,
+                 on_click_open_aria2c: Callable):
         super().__init__()
 
-        self.layout = layout = ttk.LabelFrame(root, text='Aria2下载设置')
+        self.layout = layout = ttk.LabelFrame(root, text='Aria2功能区域')
         layout.config(padding=5)
         layout.pack(fill=tkinter.BOTH, pady=5)
 
@@ -24,7 +30,7 @@ class Frame(baseFrame):
         ttk.Label(frame, text='存放目录*', width=Frame.LABEL_WIDTH, anchor=tkinter.E).pack(side=tkinter.LEFT)
         self.dir = tkinter.StringVar()
         cache.tkVariable(self.dir, 'local_dir')
-        ttk.Entry(frame, state='readonly', textvariable=self.dir).pack(fill=tkinter.X, side=tkinter.LEFT, expand=True)
+        MyEntry(frame, state='readonly', textvariable=self.dir).pack(fill=tkinter.X, side=tkinter.LEFT, expand=True)
 
         # 打开目录和选择目录 两个按钮
         frame = ttk.Frame(self.layout)
@@ -41,18 +47,7 @@ class Frame(baseFrame):
         ttk.Label(frame, text='网络代理', width=Frame.LABEL_WIDTH, anchor=tkinter.E).pack(side=tkinter.LEFT)
         self.aria2_proxy = tkinter.StringVar()
         cache.tkVariable(self.aria2_proxy, 'aria2_proxy')
-        ttk.Entry(frame, textvariable=self.aria2_proxy).pack(fill=tkinter.BOTH, expand=True)
-
-        # 允许同时下载的任务数量
-        frame = ttk.Frame(self.layout)
-        frame.pack(fill=tkinter.BOTH, pady=5)
-        ttk.Label(frame, text='允许', width=Frame.LABEL_WIDTH, anchor=tkinter.E).pack(side=tkinter.LEFT)
-        self.max_concurrent = tkinter.StringVar(value='5')
-        cache.tkVariable(self.max_concurrent, 'aria2_max_concurrent')
-        box = ttk.Spinbox(frame, from_=1, to=20, width=5, textvariable=self.max_concurrent, state='readonly')
-        box.pack(fill=tkinter.NONE, side=tkinter.LEFT)
-        ttk.Label(frame, text='个任务同时进行下载', anchor=tkinter.E).pack(side=tkinter.LEFT)
-        self.without_disable.append(box)
+        MyEntry(frame, textvariable=self.aria2_proxy).pack(fill=tkinter.BOTH, expand=True)
 
         # aria2的状态显示
         frame = ttk.Frame(self.layout)
@@ -62,6 +57,21 @@ class Frame(baseFrame):
                                      borderwidth=0)
         self.__state_canvas.pack(side=tkinter.LEFT)
         self.__change_color(fill='red')
+
+        # 启动Aria2c
+        frame = ttk.Frame(self.layout)
+        frame.pack(fill=tkinter.BOTH, pady=5)
+        ttk.Button(frame, text='启动Aria2c', command=on_click_start_aria2c).pack(side=tkinter.LEFT)
+
+        # 杀掉Aria2c
+        btn = ttk.Button(frame, text='停止Aria2c', command=on_click_stop_aria2c)
+        btn.pack(side=tkinter.LEFT)
+        self.without_disable.append(btn)
+
+        # 打开Aria2c webui
+        btn = ttk.Button(frame, text='Aria2管理页面', command=on_click_open_aria2c)
+        btn.pack(side=tkinter.LEFT)
+        self.without_disable.append(btn)
 
     def turn_on(self):
         self.__change_color('green')

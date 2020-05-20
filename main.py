@@ -1,4 +1,5 @@
 import tkinter
+import webbrowser
 from multiprocessing import freeze_support
 from sys import platform
 from tkinter import messagebox
@@ -11,28 +12,34 @@ import ui_buttons
 import ui_log
 import ui_m3u8
 from core import Core
+from core_aria2c import CoreAria2c
+from ffmpeg import merge_ts_to_mp4
 from ui_menu import Menu
 
 
 class Window:
     def __init__(self):
-        self.__is_start = False
         self.__root = root = tkinter.Tk()
         root.title('HLS录制程序')
         Menu(root)
-        print('app目录', resource_path.path('./'))
+        print('app目录', resource_path.path(''))
         # 设置windows窗口图标
         if platform == 'win32':
             icon = resource_path.path('icon.ico')
             # print('icon', icon)
             root.iconbitmap(icon)
+        else:
+            root.iconbitmap(resource_path.path('icon.icns'))
 
         root.minsize(450, 450)
         frame = Frame(root)
         frame.config(padding=5)
         frame.pack(fill=tkinter.BOTH, expand=True)
         self.__ui_m3u8 = m3u8 = ui_m3u8.Frame(root=frame, cache=my_cache)
-        self.__ui_aria2 = aria2 = ui_aria2.Frame(root=frame, cache=my_cache)
+        self.__ui_aria2 = aria2 = ui_aria2.Frame(root=frame, cache=my_cache,
+                                                 on_click_start_aria2c=self.start_aria2c,
+                                                 on_click_stop_aria2c=self.stop_aria2c,
+                                                 on_click_open_aria2c=self.open_aria2c_webui)
         self.__ui_log = log = ui_log.Frame(root=frame)
         self.__ui_buttons = ui_buttons.Frame(root=frame,
                                              on_click_start=self.start,
@@ -40,25 +47,45 @@ class Window:
                                              on_click_merge_video=self.merge_video)
         log.pack()
 
-        self.__core: Core = Core(
-            log=log,
-            m3u8_src=m3u8.m3u8_src,
-            m3u8_proxy=m3u8.m3u8_proxy,
-            aria2_dir=aria2.dir,
-            aria2_max_concurrent=aria2.max_concurrent,
-            aria2_proxy=aria2.aria2_proxy,
-        )
+        self.__core: Core = None
+        self.__core_aria2c: CoreAria2c = CoreAria2c(logger=log)
 
         root.protocol("WM_DELETE_WINDOW", self.on_closing)
 
         root.mainloop()
 
+    def start_aria2c(self):
+        if self.__core_aria2c.is_running:
+            return
+        self.__ui_log.log('正在启动Aria2c')
+        self.__ui_aria2.disable()
+        self.__core_aria2c.start(dir=self.__ui_aria2.dir.get(), proxy=self.__ui_aria2.aria2_proxy.get())
+        self.__ui_aria2.turn_on()
+        self.__ui_aria2.disable()
+        self.__ui_log.log('成功启动Aria2c')
+
+    def stop_aria2c(self):
+        if self.__core_aria2c.is_running:
+            self.__ui_log.log('正在停止Aria2c')
+            self.__core_aria2c.stop()
+            self.__ui_aria2.disable(False)
+            self.__ui_aria2.turn_off()
+            self.__ui_log.log('成功停止Aria2c')
+
+    def open_aria2c_webui(self):
+        if self.__core_aria2c.is_running:
+            webbrowser.open(
+                'https://ziahamza.github.io/webui-aria2/'
+                '?host=127.0.0.1&port={port}&token={token}'.format(port=self.__core_aria2c.port, token=123456))
+
     def on_closing(self):
-        if self.__core.is_running():
+        if self.__core and self.__core.is_running:
             if messagebox.askokcancel('警告', '正在录制，确认退出？'):
+                self.__core_aria2c.stop()
                 self.__core.stop()
                 self.__root.destroy()
         else:
+            self.__core_aria2c.stop()
             self.__root.destroy()
 
     def start(self):
@@ -70,27 +97,37 @@ class Window:
         self.__ui_aria2.disable()
         self.__ui_buttons.disable()
 
+        if not self.__core_aria2c.is_running:
+            self.start_aria2c()
+
+        self.__core = Core(
+            logger=self.__ui_log,
+            m3u8_src=self.__ui_m3u8.m3u8_src.get(),
+            m3u8_proxy=self.__ui_m3u8.m3u8_proxy.get(),
+            api=self.__core_aria2c.api,
+        )
+
         try:
-            self.__core.test_m3u8()
+            self.__core.load_m3u8()
         except Exception as e:
             self.__ui_m3u8.disable(False)
-            self.__ui_aria2.disable(False)
             self.__ui_buttons.disable(False)
             messagebox.showerror(title='M3u8源读取错误', message=e)
-            return
+            raise e
         self.__core.start()
 
         self.__ui_aria2.turn_on()
 
     def stop(self):
         self.__core.stop()
-        self.__ui_aria2.turn_off()
         self.__ui_m3u8.disable(False)
-        self.__ui_aria2.disable(False)
         self.__ui_buttons.disable(False)
 
+        if messagebox.askyesno(title='Aria2c仍然在运行', message='是否停止Aria2c？'):
+            self.stop_aria2c()
+
     def merge_video(self):
-        print('merge video')
+        merge_ts_to_mp4(self.__ui_aria2.dir.get())
 
 
 if __name__ == '__main__':

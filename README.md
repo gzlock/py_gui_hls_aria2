@@ -20,7 +20,7 @@
 
 ### 测试情况
 * 在macOS系统上测试通过
-* 在Windows 7系统上仍然有问题
+* 在Windows 10.v2004上测试通过
 
 ### 截图
 ![screenshot](./screenshot.png)

@@ -2,6 +2,7 @@ import tkinter
 from tkinter import ttk
 
 import my_cache
+from my_entry import MyEntry
 from ui import Frame as baseFrame
 
 
@@ -22,7 +23,7 @@ class Frame(baseFrame):
         ttk.Label(frame, text='m3u8源*', width=Frame.LABEL_WIDTH, anchor=tkinter.E).pack(side=tkinter.LEFT)
         self.m3u8_src = tkinter.StringVar()
         cache.tkVariable(self.m3u8_src, 'm3u8_src')
-        ttk.Entry(frame, textvariable=self.m3u8_src).pack(fill=tkinter.BOTH, expand=True)
+        MyEntry(frame, textvariable=self.m3u8_src).pack(fill=tkinter.BOTH, expand=True)
 
         # 代理输入框
         frame = ttk.Frame(self.layout)
@@ -30,4 +31,4 @@ class Frame(baseFrame):
         ttk.Label(frame, text='网络代理', width=Frame.LABEL_WIDTH, anchor=tkinter.E).pack(side=tkinter.LEFT)
         self.m3u8_proxy = tkinter.StringVar()
         cache.tkVariable(self.m3u8_proxy, 'm3u8_proxy')
-        ttk.Entry(frame, textvariable=self.m3u8_proxy).pack(fill=tkinter.BOTH, expand=True)
+        MyEntry(frame, textvariable=self.m3u8_proxy).pack(fill=tkinter.BOTH, expand=True)

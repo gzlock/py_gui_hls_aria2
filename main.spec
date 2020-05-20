@@ -16,12 +16,12 @@ else:
 block_cipher = None
 
 
-a = Analysis(['test.py'],
+a = Analysis(['main.py'],
              pathex=[path],
              binaries=binaries,
              datas=[
-                ('icon.ico', '.'),
-                ('icon.icns', '.'),
+                ('./icon.ico', '.'),
+                ('./icon.icns', '.'),
              ],
              hiddenimports=[],
              hookspath=[],
@@ -40,12 +40,12 @@ exe = EXE(pyz,
           a.datas,
           [],
           name='main',
-          debug=False,
           bootloader_ignore_signals=False,
           strip=False,
           upx=True,
           runtime_tmpdir=None,
-          console=False , icon=icon)
+          debug=False,
+          console=True , icon=icon)
 app = BUNDLE(exe,
              name='main.app',
              icon=icon,

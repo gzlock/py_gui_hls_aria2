@@ -1,75 +1,66 @@
-import os
-import subprocess
-import threading
-import time
 import tkinter.ttk
-from sys import platform
+from tkinter import filedialog, messagebox
 from tkinter.scrolledtext import ScrolledText
 
-import aria2p
-import psutil
-
-
-def kill(proc_pid):
-    process = psutil.Process(proc_pid)
-    for proc in process.children(recursive=True):
-        proc.kill()
-    process.kill()
+from core_new import CoreNew
 
 
 class W:
     def __init__(self):
-        self.t: threading.Thread = None
-        self.is_running = False
+        self.core: CoreNew = None
         root = tkinter.Tk()
+
+        frame = tkinter.ttk.Frame(root, padding=20)
+        frame.pack(fill=tkinter.X)
+        self.__dir = tkinter.StringVar()
+        input = tkinter.ttk.Entry(frame, textvariable=self.__dir, state='readonly', )
+        input.pack(fill=tkinter.X)
+        input.bind('<Button-1>', self.select_dir)
+
         frame = tkinter.ttk.Frame(root, padding=20)
         frame.pack()
-        tkinter.ttk.Button(frame, text='开始', command=self.start).pack()
-        tkinter.ttk.Button(frame, text='停止', command=self.stop).pack(pady=20)
+        self.start_btn = tkinter.ttk.Button(frame, text='开始', command=self.start)
+        self.start_btn.pack()
+        self.stop_btn = tkinter.ttk.Button(frame, text='停止', command=self.stop)
+        self.stop_btn.pack(pady=20)
         self.__log = ScrolledText(frame)
         self.__log.pack()
         root.mainloop()
 
     def start(self):
-        self.t = threading.Thread(target=self.aria2)
-        self.t.start()
+        if len(self.__dir.get()) == 0:
+            messagebox.showinfo(message='请选择文件夹')
+            return
+        self.start_btn.config(state=tkinter.DISABLED)
+        self.stop_btn.config(state=tkinter.NORMAL)
+        self.core = CoreNew(log=self.log,
+                            dir=self.__dir.get(),
+                            m3u8_src='https://4gtvfreepc-cds.cdn.hinet.net/live/pool/4gtv-4gtv040/4gtv-live-mid/index.m3u8?token=RIYRIiXssnNymHIExMvJbg&expires=1590010977&token1=GQqukf7YLOoA-SzU9toa8g&expires1=1590010977&_=1589964175187')
+        try:
+            self.core.load_m3u8()
+        except Exception as e:
+            messagebox.showerror(title='错误', message=str(e))
+            self.stop()
+            return
+        self.core.start()
 
     def log(self, msg: str):
+        # print('log', msg)
         self.__log.insert(tkinter.END, msg + '\n')
+        self.__log.see('end')
 
     def stop(self):
-        self.is_running = False
+        if self.core is None:
+            return
+        self.core.stop()
+        self.core = None
+        self.start_btn.config(state=tkinter.NORMAL)
+        self.stop_btn.config(state=tkinter.DISABLED)
 
-    def aria2(self):
-        self.log('启动')
-        self.is_running = True
-        parameter = ' -s4 -x16 --enable-rpc --rpc-listen-port=2333 --rpc-secret=123456' \
-                    ' --rpc-allow-origin-all=true --rpc-listen-all=true'
-        if platform == 'win32':
-            command = os.path.join('binary', 'win', 'aria2c.exe')
-        else:
-            command = os.path.join('binary', 'darwin', 'aria2c')
-
-        self.log('启动命令 %s' % command)
-        process = subprocess.Popen(command + parameter, shell=True)
-        api = aria2p.API(aria2p.Client(port=2333, secret='123456', timeout=2))
-        if platform != 'win32':
-            time.sleep(1)
-        options = api.get_global_options()
-        options.max_concurrent_downloads = 20
-        options.all_proxy = 'http://127.0.0.1:8888'
-        while self.is_running:
-            self.log('api version %s' % api.client.get_version()['version'])
-            options = api.get_global_options()
-            self.log('api max-concurrent-downloads %d' % options.max_concurrent_downloads)
-            self.log('api all-proxy %s' % options.all_proxy)
-            time.sleep(1)
-        self.log('结束任务')
-        kill(process.pid)
-        try:
-            self.log('杀掉Aria2后查询version %s' % api.client.get_version()['version'])
-        except Exception as e:
-            self.log('杀掉Aria2后查询version %s' % str(e))
+    def select_dir(self, *args):
+        value = filedialog.askdirectory(title='选择要存放视频的目录')
+        if len(value) > 0:
+            self.__dir.set(value)
 
 
 if __name__ == '__main__':
