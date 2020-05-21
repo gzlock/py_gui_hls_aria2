@@ -9,7 +9,7 @@ import requests
 from ui_log import Frame
 
 
-class Core:
+class CoreM3u8:
     def __init__(self, logger: Frame,
                  m3u8_src: str,
                  m3u8_proxy: str,

@@ -11,7 +11,6 @@ from ui import Frame as baseFrame
 
 
 class Frame(baseFrame):
-    LABEL_WIDTH = 10
 
     def __init__(self, root,
                  cache: my_cache,
@@ -27,7 +26,8 @@ class Frame(baseFrame):
         # 目录选择
         frame = ttk.Frame(layout)
         frame.pack(fill=tkinter.BOTH, pady=5)
-        ttk.Label(frame, text='存放目录*', width=Frame.LABEL_WIDTH, anchor=tkinter.E).pack(side=tkinter.LEFT)
+        ttk.Label(frame, text='存放目录*', width=Frame.LABEL_WIDTH, anchor=tkinter.E) \
+            .pack(side=tkinter.LEFT, padx=Frame.LABEL_PADDING)
         self.dir = tkinter.StringVar()
         cache.tkVariable(self.dir, 'local_dir')
         MyEntry(frame, state='readonly', textvariable=self.dir).pack(fill=tkinter.X, side=tkinter.LEFT, expand=True)
@@ -44,7 +44,8 @@ class Frame(baseFrame):
         # 代理输入框
         frame = ttk.Frame(self.layout)
         frame.pack(fill=tkinter.BOTH, pady=5)
-        ttk.Label(frame, text='网络代理', width=Frame.LABEL_WIDTH, anchor=tkinter.E).pack(side=tkinter.LEFT)
+        ttk.Label(frame, text='网络代理', width=Frame.LABEL_WIDTH, anchor=tkinter.E) \
+            .pack(side=tkinter.LEFT, padx=Frame.LABEL_PADDING)
         self.aria2_proxy = tkinter.StringVar()
         cache.tkVariable(self.aria2_proxy, 'aria2_proxy')
         MyEntry(frame, textvariable=self.aria2_proxy).pack(fill=tkinter.BOTH, expand=True)
@@ -52,11 +53,20 @@ class Frame(baseFrame):
         # aria2的状态显示
         frame = ttk.Frame(self.layout)
         frame.pack(fill=tkinter.BOTH, pady=5)
-        ttk.Label(frame, text='Aria2状态', width=Frame.LABEL_WIDTH, anchor=tkinter.E).pack(side=tkinter.LEFT)
+        ttk.Label(frame, text='Aria2状态', width=Frame.LABEL_WIDTH, anchor=tkinter.E) \
+            .pack(side=tkinter.LEFT, padx=Frame.LABEL_PADDING)
         self.__state_canvas = Canvas(frame, width=14, height=14, bd=0, highlightthickness=0, relief=tkinter.FLAT,
                                      borderwidth=0)
         self.__state_canvas.pack(side=tkinter.LEFT)
         self.__change_color(fill='red')
+
+        # 下载中
+        frame = ttk.Frame(self.layout)
+        frame.pack(fill=tkinter.BOTH, pady=5)
+        ttk.Label(frame, text='正在下载', width=Frame.LABEL_WIDTH, anchor=tkinter.E) \
+            .pack(side=tkinter.LEFT, padx=Frame.LABEL_PADDING)
+        self.active = tkinter.IntVar(value=0)
+        ttk.Label(frame, textvariable=self.active).pack(side=tkinter.LEFT)
 
         # 启动Aria2c
         frame = ttk.Frame(self.layout)

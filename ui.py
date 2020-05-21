@@ -1,12 +1,12 @@
 import tkinter
 from tkinter import ttk
 
-from my_entry import MyEntry
-
 frameList = [tkinter.Frame, tkinter.LabelFrame, ttk.Frame, ttk.LabelFrame, tkinter.Toplevel]
 
 
 class Frame:
+    LABEL_WIDTH = 10
+    LABEL_PADDING = 4
     layout: tkinter.Widget
     without_disable: list = []
 

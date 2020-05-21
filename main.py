@@ -11,7 +11,7 @@ import ui_aria2
 import ui_buttons
 import ui_log
 import ui_m3u8
-from core import Core
+from core_m3u8 import CoreM3u8
 from core_aria2c import CoreAria2c
 from ffmpeg import merge_ts_to_mp4
 from ui_menu import Menu
@@ -47,8 +47,8 @@ class Window:
                                              on_click_merge_video=self.merge_video)
         log.pack()
 
-        self.__core: Core = None
-        self.__core_aria2c: CoreAria2c = CoreAria2c(logger=log)
+        self.__core_m3u8: CoreM3u8 = None
+        self.__core_aria2c: CoreAria2c = CoreAria2c(logger=log, active=aria2.active)
 
         root.protocol("WM_DELETE_WINDOW", self.on_closing)
 
@@ -79,16 +79,19 @@ class Window:
                 '?host=127.0.0.1&port={port}&token={token}'.format(port=self.__core_aria2c.port, token=123456))
 
     def on_closing(self):
-        if self.__core and self.__core.is_running:
+        if self.__core_m3u8 and self.__core_m3u8.is_running:
             if messagebox.askokcancel('警告', '正在录制，确认退出？'):
                 self.__core_aria2c.stop()
-                self.__core.stop()
+                self.__core_m3u8.stop()
                 self.__root.destroy()
         else:
             self.__core_aria2c.stop()
             self.__root.destroy()
 
     def start(self):
+        if len(self.__ui_m3u8.m3u8_src.get()) == 0:
+            messagebox.showerror(title='错误', message='请填写m3u8资源网址')
+            return
         if len(self.__ui_aria2.dir.get()) == 0:
             messagebox.showerror(title='错误', message='请选择存放文件夹')
             return
@@ -100,7 +103,7 @@ class Window:
         if not self.__core_aria2c.is_running:
             self.start_aria2c()
 
-        self.__core = Core(
+        self.__core_m3u8 = CoreM3u8(
             logger=self.__ui_log,
             m3u8_src=self.__ui_m3u8.m3u8_src.get(),
             m3u8_proxy=self.__ui_m3u8.m3u8_proxy.get(),
@@ -108,18 +111,18 @@ class Window:
         )
 
         try:
-            self.__core.load_m3u8()
+            self.__core_m3u8.load_m3u8()
         except Exception as e:
             self.__ui_m3u8.disable(False)
             self.__ui_buttons.disable(False)
             messagebox.showerror(title='M3u8源读取错误', message=e)
             raise e
-        self.__core.start()
+        self.__core_m3u8.start()
 
         self.__ui_aria2.turn_on()
 
     def stop(self):
-        self.__core.stop()
+        self.__core_m3u8.stop()
         self.__ui_m3u8.disable(False)
         self.__ui_buttons.disable(False)
 

@@ -2,6 +2,7 @@ import os
 import subprocess
 import threading
 import time
+import tkinter
 from sys import platform
 
 import aria2p
@@ -12,13 +13,18 @@ from ui_log import Frame
 
 
 class CoreAria2c:
-    def __init__(self, logger: Frame):
+    def __init__(self, logger: Frame, active: tkinter.IntVar):
         self.__popen: subprocess.Popen = None
         self.__is_running = False
         self.__loop_is_running = False
         self.__logger = logger
         self.__api: aria2p.API = None
         self.__port: int = None
+        self.__active = active
+
+    @property
+    def activity(self):
+        return self.__active
 
     @property
     def api(self) -> aria2p.API:
@@ -84,8 +90,10 @@ class CoreAria2c:
             '''获取因为下载速度低于10K被暂停的任务
             用代码手动恢复下载'''
             self.__api.resume_all()
-            time.sleep(2)
+            self.__active.set(len(self.__api.client.tell_active()))
+            time.sleep(0.5)
         self.kill()
+        self.__active.set(0)
         self.__is_running = False
 
     def kill(self):
