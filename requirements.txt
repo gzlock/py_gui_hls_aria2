@@ -4,3 +4,4 @@ requests
 appdirs
 diskcache
 psutil
+pycryptodomex

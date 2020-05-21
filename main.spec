@@ -5,11 +5,9 @@ from sys import platform
 binaries=[]
 
 if platform == 'win32':
-    path = 'Z:\\'
     icon = 'icon.ico'
     binaries.append(('./binary/win', './binary/win'))
 else:
-    path = '/Users/lock/Desktop/python_hls_aria2'
     icon = 'icon.icns'
     binaries.append(('./binary/darwin', './binary/darwin'))
 
@@ -17,7 +15,7 @@ block_cipher = None
 
 
 a = Analysis(['main.py'],
-             pathex=[path],
+             pathex=['./'],
              binaries=binaries,
              datas=[
                 ('./icon.ico', '.'),

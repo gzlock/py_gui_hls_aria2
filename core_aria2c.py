@@ -13,18 +13,13 @@ from ui_log import Frame
 
 
 class CoreAria2c:
-    def __init__(self, logger: Frame, active: tkinter.IntVar):
+    def __init__(self, logger: Frame):
         self.__popen: subprocess.Popen = None
         self.__is_running = False
         self.__loop_is_running = False
         self.__logger = logger
         self.__api: aria2p.API = None
         self.__port: int = None
-        self.__active = active
-
-    @property
-    def activity(self):
-        return self.__active
 
     @property
     def api(self) -> aria2p.API:
@@ -61,12 +56,12 @@ class CoreAria2c:
     def __start_aria2c(self, dir: str, proxy: str):
         self.__port = port = CoreAria2c.__get_open_port()
         parameter = ' --enable-rpc --rpc-listen-port=%d --rpc-secret=123456' \
+                    ' --rpc-allow-origin-all=true --rpc-listen-all=true' \
                     ' --split=2' \
                     ' --max-connection-per-server=16' \
                     ' --max-concurrent-downloads=10' \
                     ' --lowest-speed-limit=10k' \
                     ' --auto-file-renaming=false --allow-overwrite=true' \
-                    ' --rpc-allow-origin-all=true --rpc-listen-all=true' \
                     ' --dir=%s' % (port, dir)
         if proxy and len(proxy) > 0:
             parameter += ' --all-proxy=%s' % proxy
@@ -87,13 +82,11 @@ class CoreAria2c:
         options = self.__api.get_global_options()
         print('保存目录', options.dir)
         while self.__loop_is_running:
-            '''获取因为下载速度低于10K被暂停的任务
+            '''因为下载速度低于10K被暂停的任务
             用代码手动恢复下载'''
             self.__api.resume_all()
-            self.__active.set(len(self.__api.client.tell_active()))
-            time.sleep(0.5)
+            time.sleep(5)
         self.kill()
-        self.__active.set(0)
         self.__is_running = False
 
     def kill(self):

@@ -24,17 +24,21 @@ def merge_ts_to_mp4(dir: str, test: bool = True):
     with open(file_list, 'w+', encoding='utf-8') as file:
         file.writelines(files)
 
-    if platform == 'win32':
-        command = resource_path.path(os.path.join('binary', 'win', 'ffmpeg.exe'))
-    else:
-        command = resource_path.path(os.path.join('binary', 'darwin', 'ffmpeg'))
     target = time.strftime("%Y-%m-%d_%H_%M_%S", time.localtime()) + '.mp4'
     target = os.path.join(dir, target)
-    command = '%s -f concat -safe 0 -i "%s" -c copy %s -y' \
-              % (command, './list.txt', target)
+    if platform == 'win32':
+        command = resource_path.path(os.path.join('binary', 'win', 'ffmpeg.exe'))
+        file_list = './list.text'
+    else:
+        command = resource_path.path(os.path.join('binary', 'darwin', 'ffmpeg'))
+    command = '%s -f concat -safe 0 -i %s -c copy %s -y' \
+              % (command, file_list, target)
 
     print(command)
-    process = subprocess.Popen(command, shell=True, cwd=dir)
+    process = subprocess.Popen(command,
+                               shell=True,
+                               cwd=dir
+                               )
     if not test:
         win = tkinter.Toplevel()
         tkinter.Label(win, text='正在合并视频文件中，请稍候', font=('times', 20, 'bold')).pack(padx=10, pady=10)
@@ -57,7 +61,7 @@ def merge_ts_to_mp4(dir: str, test: bool = True):
                     else:
                         subprocess.Popen(['open', '-R', target])
             else:
-                messagebox.showinfo('合并视频文件错误', process.stdout.read())
+                messagebox.showinfo('合并视频文件错误', process.stdout.read() if process.stdout else '')
 
         win.after(100, check)
 

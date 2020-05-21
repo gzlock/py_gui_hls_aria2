@@ -1,3 +1,5 @@
+import threading
+import time
 import tkinter
 import webbrowser
 from multiprocessing import freeze_support
@@ -11,8 +13,8 @@ import ui_aria2
 import ui_buttons
 import ui_log
 import ui_m3u8
-from core_m3u8 import CoreM3u8
 from core_aria2c import CoreAria2c
+from core_m3u8 import CoreM3u8
 from ffmpeg import merge_ts_to_mp4
 from ui_menu import Menu
 
@@ -46,10 +48,11 @@ class Window:
         log.pack()
 
         self.__core_m3u8: CoreM3u8 = None
-        self.__core_aria2c: CoreAria2c = CoreAria2c(logger=log, active=aria2.active)
+        self.__core_aria2c: CoreAria2c = CoreAria2c(logger=log)
 
         root.protocol("WM_DELETE_WINDOW", self.on_closing)
 
+        threading.Thread(target=self.loop_check).start()
         root.mainloop()
 
     def start_aria2c(self):
@@ -129,6 +132,24 @@ class Window:
 
     def merge_video(self):
         merge_ts_to_mp4(self.__ui_aria2.dir.get(), test=False)
+
+    def loop_check(self):
+        """每秒检查运行状态"""
+        while True:
+            if self.__core_m3u8:
+                self.__ui_buttons.disable(self.__core_m3u8.is_running)
+                self.__ui_m3u8.disable(self.__core_m3u8.is_running)
+            active_len = 0
+            waiting_len = 0
+            stopped_len = 0
+            if self.__core_aria2c and self.__core_aria2c.is_running:
+                active_len = len(self.__core_aria2c.api.client.tell_active())
+                waiting_len = len(self.__core_aria2c.api.client.tell_waiting(0, 1000))
+                stopped_len = len(self.__core_aria2c.api.client.tell_stopped(0, 1000))
+            self.__ui_aria2.active.set(active_len)
+            self.__ui_aria2.waiting.set(waiting_len)
+            self.__ui_aria2.stopped.set(stopped_len)
+            time.sleep(2)
 
 
 if __name__ == '__main__':

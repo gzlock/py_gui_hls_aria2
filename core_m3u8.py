@@ -35,7 +35,7 @@ class CoreM3u8:
         self.__loop_is_running = False
         time.sleep(1)
 
-    def load_m3u8(self) -> Set[str]:
+    def load_m3u8(self) -> m3u8.M3U8:
         proxies = {}
         if len(self.__m3u8_proxy) > 0:
             proxies['http'] = proxies['https'] = self.__m3u8_proxy
@@ -45,25 +45,29 @@ class CoreM3u8:
                             '\nNow is %d' % res.status_code)
         if '#EXTM3U' not in res.text:
             raise Exception('The m3u8 src is not match the hls standard')
-        content = m3u8.loads(res.text, self.__m3u8_src)
-        if content.is_variant:
-            self.__m3u8_src = max(content.playlists, key=lambda item: item.stream_info.bandwidth).absolute_uri
-            return set()
-        return set([s.absolute_uri for s in content.segments])
+        return m3u8.loads(res.text, self.__m3u8_src)
 
     def __loop(self):
         urls: Set[str] = set()
         while self.__loop_is_running:
             try:
-                new_urls = self.load_m3u8().difference(urls)
-                if len(new_urls) > 0:
-                    urls.update(new_urls)
-                    new_urls = list(new_urls)
-                    list.sort(new_urls)
-                    print('%d个新碎片' % len(new_urls))
-                    for url in new_urls:
-                        self.__logger.log('新视频碎片\n%s' % url)
-                        self.__api.add_uris([url])
+                content = self.load_m3u8()
+                if content.is_variant:
+                    self.__m3u8_src = max(content.playlists, key=lambda item: item.stream_info.bandwidth).absolute_uri
+                else:
+                    new_urls = set([s.absolute_uri for s in content.segments]).difference(urls)
+                    if len(new_urls) > 0:
+                        urls.update(new_urls)
+                        new_urls = list(new_urls)
+                        list.sort(new_urls)
+                        print('%d个新碎片' % len(new_urls))
+                        for url in new_urls:
+                            self.__logger.log('新视频碎片\n%s' % url)
+                            self.__api.add_uris([url])
+                    # m3u8列表已经结束
+                    if content.data.get('is_endlist'):
+                        self.__loop_is_running = False
+                        self.__logger.log('m3u8列表已经结束')
             except Exception as e:
                 print('loop错误', e)
                 self.__logger.error('读取m3u8发生错误\n %s' % str(e))

@@ -6,6 +6,10 @@
 - HLS的ts视频碎片使用集成的Aria2进行下载，安全可靠
 - 支持Windows和macOS系统
 
+### 不支持
+- 加密的m3u8流
+- 独立音轨的m3u8流
+
 ### 一体化
 - 集成Aria2c，下载HLS的视频碎片
 - 集成FFmpeg，将HLS的视频碎片合并为完整视频
@@ -25,3 +29,7 @@
 ### 截图
 ![screenshot](screenshot_macos.png)
 ![screenshot](screenshot_win.png)
+
+
+### 自行编译
+

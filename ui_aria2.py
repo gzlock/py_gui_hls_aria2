@@ -68,6 +68,22 @@ class Frame(baseFrame):
         self.active = tkinter.IntVar(value=0)
         ttk.Label(frame, textvariable=self.active).pack(side=tkinter.LEFT)
 
+        # 等待中
+        frame = ttk.Frame(self.layout)
+        frame.pack(fill=tkinter.BOTH, pady=5)
+        ttk.Label(frame, text='等候下载', width=Frame.LABEL_WIDTH, anchor=tkinter.E) \
+            .pack(side=tkinter.LEFT, padx=Frame.LABEL_PADDING)
+        self.waiting = tkinter.IntVar(value=0)
+        ttk.Label(frame, textvariable=self.waiting).pack(side=tkinter.LEFT)
+
+        # 已完成
+        frame = ttk.Frame(self.layout)
+        frame.pack(fill=tkinter.BOTH, pady=5)
+        ttk.Label(frame, text='已经完成', width=Frame.LABEL_WIDTH, anchor=tkinter.E) \
+            .pack(side=tkinter.LEFT, padx=Frame.LABEL_PADDING)
+        self.stopped = tkinter.IntVar(value=0)
+        ttk.Label(frame, textvariable=self.stopped).pack(side=tkinter.LEFT)
+
         # 启动Aria2c
         frame = ttk.Frame(self.layout)
         frame.pack(fill=tkinter.BOTH, pady=5)
