@@ -23,4 +23,5 @@
 * 在Windows 10.v2004上测试通过
 
 ### 截图
-![screenshot](./screenshot.png)
+![screenshot](screenshot_macos.png)
+![screenshot](screenshot_win.png)
