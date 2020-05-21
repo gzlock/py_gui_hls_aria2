@@ -26,10 +26,8 @@ class Window:
         # 设置windows窗口图标
         if platform == 'win32':
             icon = resource_path.path('icon.ico')
-            # print('icon', icon)
+            print('icon', icon)
             root.iconbitmap(icon)
-        else:
-            root.iconbitmap(resource_path.path('icon.icns'))
 
         root.minsize(450, 450)
         frame = Frame(root)
