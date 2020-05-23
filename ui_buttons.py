@@ -23,7 +23,7 @@ class Frame:
         stop_btn.pack(side=tkinter.LEFT, padx=5, pady=5)
 
         # 水印按钮
-        ttk.Button(layout, text='给视频碎片添加水印', command=on_click_watermark) \
+        ttk.Button(layout, text='添加水印', command=on_click_watermark) \
             .pack(side=tkinter.LEFT, padx=5, pady=5)
 
         # 合并视频按钮
