@@ -44,11 +44,11 @@ class WatermarkWindow(Frame):
         frame.pack(fill=tkinter.BOTH, pady=5)
         self.__watermark_count = tkinter.IntVar()
         my_cache.tkVariable(self.__watermark_count, 'watermark_count')
-        ttk.Label(frame, text='给多少个', width=Frame.LABEL_WIDTH, anchor=tkinter.E) \
+        ttk.Label(frame, text='随机给', width=Frame.LABEL_WIDTH, anchor=tkinter.E) \
             .pack(side=tkinter.LEFT, padx=Frame.LABEL_PADDING)
         MyEntry(frame, textvariable=self.__watermark_count, width=5) \
             .pack(side=tkinter.LEFT)
-        ttk.Label(frame, text='视频碎片加水印', anchor=tkinter.E).pack(side=tkinter.LEFT, padx=Frame.LABEL_PADDING)
+        ttk.Label(frame, text='个视频碎片加水印', anchor=tkinter.E).pack(side=tkinter.LEFT, padx=Frame.LABEL_PADDING)
         ttk.Button(self.__ui_frame, text='确认', command=self.doit).pack()
 
         # 工作中的提示
