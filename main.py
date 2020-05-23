@@ -17,6 +17,7 @@ from core_aria2c import CoreAria2c
 from core_m3u8 import CoreM3u8
 from ffmpeg import merge_ts_to_mp4
 from ui_menu import Menu
+from ui_watermark import WatermarkWindow
 
 
 class Window:
@@ -44,7 +45,8 @@ class Window:
         self.__ui_buttons = ui_buttons.Frame(root=frame,
                                              on_click_start=self.start,
                                              on_click_stop=self.stop,
-                                             on_click_merge_video=self.merge_video)
+                                             on_click_merge_video=self.merge_video,
+                                             on_click_watermark=self.watermark)
         log.pack()
 
         self.__core_m3u8: CoreM3u8 = None
@@ -72,6 +74,11 @@ class Window:
             self.__ui_aria2.disable(False)
             self.__ui_aria2.turn_off()
             self.__ui_log.log('成功停止Aria2c')
+
+    def watermark(self):
+        dir = self.__ui_aria2.dir.get()
+        if dir:
+            WatermarkWindow(dir=dir)
 
     def open_aria2c_webui(self):
         if self.__core_aria2c.is_running:
@@ -139,16 +146,6 @@ class Window:
             if self.__core_m3u8:
                 self.__ui_buttons.disable(self.__core_m3u8.is_running)
                 self.__ui_m3u8.disable(self.__core_m3u8.is_running)
-            active_len = 0
-            waiting_len = 0
-            stopped_len = 0
-            if self.__core_aria2c and self.__core_aria2c.is_running:
-                active_len = len(self.__core_aria2c.api.client.tell_active())
-                waiting_len = len(self.__core_aria2c.api.client.tell_waiting(0, 1000))
-                stopped_len = len(self.__core_aria2c.api.client.tell_stopped(0, 1000))
-            self.__ui_aria2.active.set(active_len)
-            self.__ui_aria2.waiting.set(waiting_len)
-            self.__ui_aria2.stopped.set(stopped_len)
             time.sleep(2)
 
 

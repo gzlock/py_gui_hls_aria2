@@ -32,4 +32,9 @@
 
 
 ### 自行编译
+- Windows和macOS在命令行执行命令 `pyinstaller main.spec`
+
+### About FFMpeg and Aria2
+- FFMpeg download from https://ffmpeg.zeranoe.com/builds/
+- aria2 download from https://github.com/aria2/aria2
 

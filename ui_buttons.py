@@ -7,6 +7,7 @@ class Frame:
     def __init__(self, root, on_click_start,
                  on_click_stop: Callable,
                  on_click_merge_video: Callable,
+                 on_click_watermark: Callable,
                  ):
         self.root = root
         self.layout = layout = ttk.LabelFrame(root, text='控制区')
@@ -20,6 +21,10 @@ class Frame:
         # 停止按钮
         self.stop_btn = stop_btn = ttk.Button(layout, text='停止录制', command=on_click_stop, state=tkinter.DISABLED)
         stop_btn.pack(side=tkinter.LEFT, padx=5, pady=5)
+
+        # 水印按钮
+        ttk.Button(layout, text='给视频碎片添加水印', command=on_click_watermark) \
+            .pack(side=tkinter.LEFT, padx=5, pady=5)
 
         # 合并视频按钮
         ttk.Button(layout, text='合并视频', command=on_click_merge_video) \
