@@ -59,6 +59,9 @@ class WatermarkWindow(Frame):
 
         win.after(100, utils.move_to_screen_center, win)
 
+        open('./log.txt', 'w').write('')
+        # open('./log.txt', 'a').write('打开了水印窗口\n')
+
     def undo(self):
         watermark.undo(self.__dir)
 
@@ -81,14 +84,20 @@ class WatermarkWindow(Frame):
         if self.__watermark_count.get() > self.__total:
             messagebox.showerror(message='大于文件总量')
             return
+
+        open('./log.txt', 'a').write('开始添加水印\n')
         self.__is_doing = True
         self.__win.protocol("WM_DELETE_WINDOW", self.close)
         self.__ui_frame.pack_forget()
         self.__ui_doing.pack()
         self.__pool = multiprocessing.Pool(processes=multiprocessing.cpu_count())
         watermark.undo(dir=self.__dir)
-        watermark.watermark(dir=self.__dir, watermark=self.__watermark.get(), pool=self.__pool,
-                            count=self.__watermark_count.get())
+        open('./log.txt', 'a').write('水印线程数量 %d\n' % multiprocessing.cpu_count())
+        try:
+            watermark.watermark(dir=self.__dir, watermark=self.__watermark.get(), pool=self.__pool,
+                                count=self.__watermark_count.get())
+        except Exception as e:
+            open('./log.txt', 'a').write('错误 %s \n' % e)
         self.__ui_frame.pack()
         self.__ui_doing.pack_forget()
         self.__win.protocol("WM_DELETE_WINDOW", self.nothing)

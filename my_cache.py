@@ -4,13 +4,13 @@ from tkinter import Variable
 import appdirs
 from diskcache import Cache
 
-__temp_dir = appdirs.user_data_dir(appname='hls_recorder', appauthor='gzlock')
+temp_dir = appdirs.user_data_dir(appname='hls_recorder', appauthor='gzlock')
 
-print('cache dir', __temp_dir)
+print('cache dir', temp_dir)
 
-cache = Cache(__temp_dir)
+cache = Cache(temp_dir)
 
-log_file = os.path.join(__temp_dir, 'log.txt')
+log_file = os.path.join(temp_dir, 'log.txt')
 
 
 def tkVariable(var: Variable, key: str, default=None):
