@@ -126,7 +126,7 @@ def process(task: VideoTask):
                                    codec_name=task.codec_name, profile=task.profile, level=task.level,
                                    output=new_file)
     print('添加水印命令', command)
-    open('./log.txt', 'a').write('添加水印命令: %s \n' % command)
+    # open('./log.txt', 'a').write('添加水印命令: %s \n' % command)
     process = subprocess.Popen(command,
                                shell=True,
                                stdin=subprocess.PIPE,
@@ -135,8 +135,8 @@ def process(task: VideoTask):
     out, err = process.communicate()
     print('输出out %s' % out)
     print('输出err %s' % err.decode('utf-8'))
-    open('./log.txt', 'a').write('输出out: %s \n' % out)
-    open('./log.txt', 'a').write('输出err: %s \n' % err.decode('utf-8'))
+    # open('./log.txt', 'a').write('输出out: %s \n' % out)
+    # open('./log.txt', 'a').write('输出err: %s \n' % err.decode('utf-8'))
     # print('加水印后', get_video_stream(file))
 
 
