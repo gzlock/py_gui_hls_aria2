@@ -59,8 +59,7 @@ class WatermarkWindow(Frame):
 
         win.after(100, utils.move_to_screen_center, win)
 
-        open('./log.txt', 'w').write('')
-        # open('./log.txt', 'a').write('打开了水印窗口\n')
+        # open('./log.txt', 'w').write('打开了水印窗口\n')
 
     def undo(self):
         watermark.undo(self.__dir)
