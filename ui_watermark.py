@@ -18,6 +18,7 @@ class WatermarkWindow(Frame):
         self.__dir = dir
         self.__is_doing = False
         self.__win = win = tkinter.Toplevel()
+        win.grab_set()
         win.title('添加文字水印')
         self.__ui_frame = frame = ttk.Label(win)
         frame.pack(fill=tkinter.BOTH, pady=5)
@@ -80,7 +81,6 @@ class WatermarkWindow(Frame):
         if self.__watermark_count.get() > self.__total:
             messagebox.showerror(message='大于文件总量')
             return
-        self.__win.grab_set()
         self.__is_doing = True
         self.__win.protocol("WM_DELETE_WINDOW", self.close)
         self.__ui_frame.pack_forget()

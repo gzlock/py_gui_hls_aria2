@@ -28,13 +28,13 @@ def merge_ts_to_mp4(dir: str, test: bool = True):
     target = os.path.join(dir, target)
     if platform == 'win32':
         command = resource_path.path(os.path.join('binary', 'win', 'ffmpeg.exe'))
-        file_list = './list.text'
+        file_list = './list.txt'
     else:
         command = resource_path.path(os.path.join('binary', 'darwin', 'ffmpeg'))
     command = '%s -f concat -safe 0 -i %s -c copy %s -y' \
               % (command, file_list, target)
 
-    print(command)
+    print('合并视频', command)
     process = subprocess.Popen(command,
                                shell=True,
                                cwd=dir

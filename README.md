@@ -39,10 +39,10 @@
 
 ### 已知问题
 - 启动慢，是pyinstaller的问题，无法解决
-- 在macOS系统，输入框不能输入中文(macOS自带的输入法)，无法解决
+- 在macOS系统，输入框不能输入中文(macOS自带的输入法)，安装新版的Tcl/tk也不行，找不到解决办法
 
 
 ### About FFMpeg and Aria2
-- FFMpeg download from https://ffmpeg.zeranoe.com/builds/
-- aria2 download from https://github.com/aria2/aria2
+- FFMpeg v4.2.2 downloaded from https://ffmpeg.zeranoe.com/builds/
+- Aria2 v1.35.0 downloaded from https://github.com/aria2/aria2
 

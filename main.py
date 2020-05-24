@@ -1,5 +1,6 @@
-import threading
-import time
+#!/usr/bin/python
+# -*- coding=utf-8 -*-
+
 import tkinter
 import webbrowser
 from multiprocessing import freeze_support
@@ -54,8 +55,8 @@ class Window:
 
         root.protocol("WM_DELETE_WINDOW", self.on_closing)
 
-        self.__loop_check = True
-        threading.Thread(target=self.loop_check).start()
+        # threading.Thread(target=self.loop_check).start()
+        self.loop_check()
         root.mainloop()
 
     def start_aria2c(self):
@@ -92,7 +93,6 @@ class Window:
             if not messagebox.askokcancel('警告', '正在录制，确认退出？'):
                 return
             self.__core_m3u8.stop()
-        self.__loop_check = False
         self.__core_aria2c.stop()
         self.__root.destroy()
 
@@ -142,12 +142,11 @@ class Window:
 
     def loop_check(self):
         """每秒检查运行状态"""
-        while self.__loop_check:
-            if self.__core_m3u8:
-                self.__ui_buttons.disable(self.__core_m3u8.is_running)
-                self.__ui_m3u8.disable(self.__core_m3u8.is_running)
-            time.sleep(2)
-        print('退出')
+        if self.__core_m3u8:
+            self.__ui_buttons.disable(self.__core_m3u8.is_running)
+            self.__ui_m3u8.disable(self.__core_m3u8.is_running)
+
+        self.__root.after(ms=2000, func=self.loop_check)
 
 
 if __name__ == '__main__':
