@@ -29,8 +29,12 @@ class Frame:
         # 合并视频按钮
         ttk.Button(layout, text='合并视频', command=on_click_merge_video) \
             .pack(side=tkinter.LEFT, padx=5, pady=5)
+        self.__is_disable = False
 
     def disable(self, disabled: bool = True):
+        if self.__is_disable == disabled:
+            return
+        self.__is_disable = disabled
         if disabled:
             self.start_btn.config(state=tkinter.DISABLED)
             self.stop_btn.config(state=tkinter.NORMAL)

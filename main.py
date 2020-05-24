@@ -54,6 +54,7 @@ class Window:
 
         root.protocol("WM_DELETE_WINDOW", self.on_closing)
 
+        self.__loop_check = True
         threading.Thread(target=self.loop_check).start()
         root.mainloop()
 
@@ -88,13 +89,12 @@ class Window:
 
     def on_closing(self):
         if self.__core_m3u8 and self.__core_m3u8.is_running:
-            if messagebox.askokcancel('警告', '正在录制，确认退出？'):
-                self.__core_aria2c.stop()
-                self.__core_m3u8.stop()
-                self.__root.destroy()
-        else:
-            self.__core_aria2c.stop()
-            self.__root.destroy()
+            if not messagebox.askokcancel('警告', '正在录制，确认退出？'):
+                return
+            self.__core_m3u8.stop()
+        self.__loop_check = False
+        self.__core_aria2c.stop()
+        self.__root.destroy()
 
     def start(self):
         if len(self.__ui_m3u8.m3u8_src.get()) == 0:
@@ -142,11 +142,12 @@ class Window:
 
     def loop_check(self):
         """每秒检查运行状态"""
-        while True:
+        while self.__loop_check:
             if self.__core_m3u8:
                 self.__ui_buttons.disable(self.__core_m3u8.is_running)
                 self.__ui_m3u8.disable(self.__core_m3u8.is_running)
             time.sleep(2)
+        print('退出')
 
 
 if __name__ == '__main__':

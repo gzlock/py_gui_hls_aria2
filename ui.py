@@ -10,7 +10,13 @@ class Frame:
     layout: tkinter.Widget
     without_disable: list = []
 
+    def __init__(self):
+        self.__is_disable = False
+
     def disable(self, disabled: bool = True):
+        if self.__is_disable == disabled:
+            return
+        self.__is_disable = disabled
         state = tkinter.NORMAL
         if disabled:
             state = tkinter.DISABLED

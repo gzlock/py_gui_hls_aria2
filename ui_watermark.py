@@ -50,12 +50,16 @@ class WatermarkWindow(Frame):
             .pack(side=tkinter.LEFT)
         ttk.Label(frame, text='个视频碎片加水印', anchor=tkinter.E).pack(side=tkinter.LEFT, padx=Frame.LABEL_PADDING)
         ttk.Button(self.__ui_frame, text='确认', command=self.doit).pack()
+        ttk.Button(self.__ui_frame, text='还原视频碎片', command=self.undo).pack(pady=10)
 
         # 工作中的提示
         self.__ui_doing = frame = ttk.Frame(win)
         ttk.Label(frame, text='正在添加水印，请稍候', font=('times', 20, 'bold')).pack()
 
         win.after(100, utils.move_to_screen_center, win)
+
+    def undo(self):
+        watermark.undo(self.__dir)
 
     def doit(self):
         threading.Thread(target=self.__doit).start()
@@ -92,7 +96,7 @@ class WatermarkWindow(Frame):
         self.__is_doing = False
 
     def close(self):
-        if self.__is_doing and messagebox.askokcancel(title='正在添加水印，确认中断？'):
+        if self.__is_doing and messagebox.askokcancel('警告', '正在添加水印中，关闭这个窗口将会中断工作'):
             self.__pool.terminate()
             self.__win.destroy()
 

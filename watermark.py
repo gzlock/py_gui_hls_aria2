@@ -4,6 +4,9 @@ import multiprocessing
 import os
 import random
 import subprocess
+import sys
+
+import resource_path
 
 
 class VideoTask:
@@ -38,10 +41,14 @@ def watermark(dir: str, watermark: str, pool: multiprocessing.Pool, count: int):
 
 
 def get_video_stream(file: str):
-    p = subprocess.Popen(
-        'ffprobe -v quiet -print_format json -show_format -show_streams %s' % file,
-        shell=True,
-        stdout=subprocess.PIPE)
+    parameter = ' -v quiet -select_streams v:0 -print_format json -show_streams %s' % file
+    if sys.platform == 'win32':
+        command = os.path.join('binary', 'win', 'ffprobe.exe')
+    else:
+        command = os.path.join('binary', 'darwin', 'ffprobe')
+    command = resource_path.path(command) + parameter
+    print('水印', command)
+    p = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
     out, err = p.communicate()
     streams = json.loads(out)['streams']
     print('streams length: %d' % len(streams))

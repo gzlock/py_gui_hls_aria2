@@ -5,6 +5,8 @@
 - 默认会选取最高分辨率的分支进行录制
 - HLS的ts视频碎片使用集成的Aria2进行下载，安全可靠
 - 支持Windows和macOS系统
+- 视频文字水印功能，在随机的视频碎片，上下左右四个角落随机一个角落放置文字水印
+- 使用集成的FFMpeg合并视频
 
 ### 不支持
 - 加密的m3u8流
@@ -32,7 +34,13 @@
 
 
 ### 自行编译
-- Windows和macOS在命令行执行命令 `pyinstaller main.spec`
+- Windows和macOS在命令行执行命令 `pyinstaller main.spec --clean -y`
+
+
+### 已知问题
+- 启动慢，是pyinstaller的问题，无法解决
+- 在macOS系统，输入框不能输入中文(macOS自带的输入法)，无法解决
+
 
 ### About FFMpeg and Aria2
 - FFMpeg download from https://ffmpeg.zeranoe.com/builds/
