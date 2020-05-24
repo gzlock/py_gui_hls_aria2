@@ -10,8 +10,8 @@ if platform == 'win32':
     name = 'HLS录制工具'
 else:
     icon = 'icon.icns'
-    name = 'main'
     binaries.append(('./binary/darwin', './binary/darwin'))
+    name = 'main'
 
 block_cipher = None
 
@@ -22,7 +22,6 @@ a = Analysis(['main.py'],
              datas=[
                 ('./icon.ico', '.'),
                 ('./icon.icns', '.'),
-                ('./font', '.'),
              ],
              hiddenimports=[],
              hookspath=[],
@@ -40,7 +39,7 @@ exe = EXE(pyz,
           a.zipfiles,
           a.datas,
           [],
-          name='main',
+          name=name,
           bootloader_ignore_signals=False,
           strip=False,
           upx=True,
@@ -49,6 +48,6 @@ exe = EXE(pyz,
           console=False,
           icon=icon)
 app = BUNDLE(exe,
-             name='main.app',
+             name='HLS录制工具.app',
              icon=icon,
              bundle_identifier=None)

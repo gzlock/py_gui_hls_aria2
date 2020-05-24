@@ -91,14 +91,15 @@ class WatermarkWindow(Frame):
                             count=self.__watermark_count.get())
         self.__ui_frame.pack()
         self.__ui_doing.pack_forget()
-        self.__win.grab_release()
         self.__win.protocol("WM_DELETE_WINDOW", self.nothing)
         self.__is_doing = False
 
     def close(self):
         if self.__is_doing and messagebox.askokcancel('警告', '正在添加水印中，关闭这个窗口将会中断工作'):
+            self.__win.grab_release()
             self.__pool.terminate()
             self.__win.destroy()
 
     def nothing(self):
+        self.__win.grab_release()
         self.__win.destroy()
