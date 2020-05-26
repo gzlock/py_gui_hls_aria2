@@ -5,3 +5,4 @@ appdirs
 diskcache
 psutil
 pycryptodomex
+pyinstaller

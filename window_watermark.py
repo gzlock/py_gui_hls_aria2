@@ -12,12 +12,14 @@ from my_entry import MyEntry
 from ui import Frame
 
 
-class WatermarkWindow(Frame):
-    def __init__(self, dir: str) -> None:
+class WatermarkWindow:
+    def __init__(self, root, dir: str) -> None:
         super().__init__()
         self.__dir = dir
         self.__is_doing = False
-        self.__win = win = tkinter.Toplevel()
+        self.__win = win = tkinter.Toplevel(root, padx=5, pady=5)
+        win.transient(root)
+        win.bind('<Escape>', lambda e: self.close())
         win.grab_set()
         win.title('添加文字水印')
         self.__ui_frame = frame = ttk.Label(win)
@@ -99,15 +101,14 @@ class WatermarkWindow(Frame):
             open('./log.txt', 'a').write('错误 %s \n' % e)
         self.__ui_frame.pack()
         self.__ui_doing.pack_forget()
-        self.__win.protocol("WM_DELETE_WINDOW", self.nothing)
         self.__is_doing = False
 
     def close(self):
-        if self.__is_doing and messagebox.askokcancel('警告', '正在添加水印中，关闭这个窗口将会中断工作'):
-            self.__win.grab_release()
+        if self.__is_doing and not messagebox.askokcancel('警告', '正在添加水印中，关闭这个窗口将会中断工作'):
+            return
+        try:
             self.__pool.terminate()
-            self.__win.destroy()
-
-    def nothing(self):
+        except Exception as e:
+            pass
         self.__win.grab_release()
         self.__win.destroy()

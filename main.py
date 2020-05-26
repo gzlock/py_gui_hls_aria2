@@ -18,7 +18,7 @@ from core_aria2c import CoreAria2c
 from core_m3u8 import CoreM3u8
 from ffmpeg import merge_ts_to_mp4
 from ui_menu import Menu
-from ui_watermark import WatermarkWindow
+from window_watermark import WatermarkWindow
 
 
 class Window:
@@ -80,7 +80,7 @@ class Window:
     def watermark(self):
         dir = self.__ui_aria2.dir.get()
         if dir:
-            WatermarkWindow(dir=dir)
+            WatermarkWindow(dir=dir, root=self.__root)
 
     def open_aria2c_webui(self):
         if self.__core_aria2c.is_running:

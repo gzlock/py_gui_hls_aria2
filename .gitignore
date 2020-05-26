@@ -1,6 +1,9 @@
 build/
 win_build/
+macos_build/
 dist/
 win_dist/
+macos_dist/
 .idea/
 *.iml
+venv/

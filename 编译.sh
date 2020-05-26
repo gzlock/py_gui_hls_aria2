@@ -1,1 +1,1 @@
-pyinstaller main.spec -y --clean
+pyinstaller main.spec -y --distpath="./macos_dist" --workpath="./macos_build" --clean

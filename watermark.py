@@ -52,7 +52,7 @@ def watermark(dir: str, watermark: str, pool: multiprocessing.Pool, count: int):
     level = stream['level']
     if sys.platform == 'win32':
         ffmpeg = os.path.join('binary', 'win', 'ffmpeg.exe')
-        font = '/Windows/Fonts/msyh.ttc'
+        font = 'C\\:/Windows/Fonts/msyh.ttc'
     else:
         ffmpeg = os.path.join('binary', 'darwin', 'ffmpeg')
         font = '/System/Library/Fonts/PingFang.ttc'
