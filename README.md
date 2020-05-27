@@ -39,8 +39,9 @@
 
 ### 已知问题
 - 启动慢，是pyinstaller的问题，无法解决
-- 在macOS系统，输入框不能输入中文(macOS自带的输入法)，安装新版的Tcl/tk也不行，找不到解决办法
-- Windows系统添加视频中文水印会显示为"口"
+- 在macOS系统，输入框不能输入中文(macOS自带的输入法)
+    - 是macOS自带的tcl/tk版本为8.5引起的
+    - 安装了新版的Tcl/tk不知道怎么替换，暂时无解
 
 
 ### About FFMpeg and Aria2

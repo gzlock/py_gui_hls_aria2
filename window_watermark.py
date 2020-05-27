@@ -5,6 +5,7 @@ import threading
 import tkinter
 from tkinter import ttk, messagebox
 
+import log
 import my_cache
 import utils
 import watermark
@@ -14,7 +15,6 @@ from ui import Frame
 
 class WatermarkWindow:
     def __init__(self, root, dir: str) -> None:
-        super().__init__()
         self.__dir = dir
         self.__is_doing = False
         self.__win = win = tkinter.Toplevel(root, padx=5, pady=5)
@@ -61,7 +61,7 @@ class WatermarkWindow:
 
         win.after(100, utils.move_to_screen_center, win)
 
-        # open('./log.txt', 'w').write('打开了水印窗口\n')
+        log.log('打开水印窗口', True)
 
     def undo(self):
         watermark.undo(self.__dir)
@@ -86,19 +86,19 @@ class WatermarkWindow:
             messagebox.showerror(message='大于文件总量')
             return
 
-        open('./log.txt', 'a').write('开始添加水印\n')
+        log.log('开始添加水印')
         self.__is_doing = True
         self.__win.protocol("WM_DELETE_WINDOW", self.close)
         self.__ui_frame.pack_forget()
         self.__ui_doing.pack()
         self.__pool = multiprocessing.Pool(processes=multiprocessing.cpu_count())
         watermark.undo(dir=self.__dir)
-        open('./log.txt', 'a').write('水印线程数量 %d\n' % multiprocessing.cpu_count())
+        log.log('水印线程数量 %d' % multiprocessing.cpu_count())
         try:
             watermark.watermark(dir=self.__dir, watermark=self.__watermark.get(), pool=self.__pool,
                                 count=self.__watermark_count.get())
         except Exception as e:
-            open('./log.txt', 'a').write('错误 %s \n' % e)
+            log.log('错误 %s' % e)
         self.__ui_frame.pack()
         self.__ui_doing.pack_forget()
         self.__is_doing = False

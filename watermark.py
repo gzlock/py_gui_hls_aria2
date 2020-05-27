@@ -9,8 +9,8 @@ import random
 import subprocess
 import sys
 
+import log
 import resource_path
-from my_cache import temp_dir
 
 
 class VideoTask:
@@ -46,6 +46,7 @@ def watermark(dir: str, watermark: str, pool: multiprocessing.Pool, count: int):
 
     add_watermark_files = ts_files[:count]
     # print('要加水印的片段', add_watermark_files)
+    log.log('要加水印的片段 %s' % add_watermark_files)
     stream = get_video_stream(ts_files[0])
     codec_name = stream['codec_name']
     profile = stream['profile']
