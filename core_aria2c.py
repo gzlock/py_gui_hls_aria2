@@ -59,7 +59,7 @@ class CoreAria2c:
                     ' --rpc-allow-origin-all=true --rpc-listen-all=true' \
                     ' --split=2' \
                     ' --max-connection-per-server=16' \
-                    ' --max-concurrent-downloads=10' \
+                    ' --max-concurrent-downloads=50' \
                     ' --lowest-speed-limit=10k' \
                     ' --auto-file-renaming=false --allow-overwrite=true' \
                     ' --dir=%s' % (port, dir)

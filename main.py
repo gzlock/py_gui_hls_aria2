@@ -105,7 +105,6 @@ class Window:
             return
 
         self.__ui_m3u8.disable()
-        self.__ui_aria2.disable()
         self.__ui_buttons.disable()
 
         if not self.__core_aria2c.is_running:
