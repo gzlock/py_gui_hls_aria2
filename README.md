@@ -1,3 +1,5 @@
+# 用Flutter重造了这个轮子， 请前往[flutter_hls_downloader](https://github.com/gzlock/flutter_hls_downloader)
+
 # HLS视频录制GUI工具
 
 ### 特性
